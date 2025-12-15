@@ -1,63 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-    
-        <style>
-            hr {
-            border-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="0" x2="100%" y2="0" stroke="%23bbbbbb" stroke-width="3" stroke-dasharray="20 8"/></svg>') 1;
-            }
-            
-            .hover-swap svg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            transition: opacity 0.3s;
-            }
-            
-            .hover-swap {
-            position: relative;
-            padding: 1.5rem;
-            margin: 2rem 0;
-            background: white;
-            }
-            
-            .hover-off { opacity: 1; }
-            .hover-on { opacity: 0; }
-            
-            .hover-swap:hover { transition: scale 0.5s; scale:105%; }
-            .hover-swap.swapped:hover .hover-off { opacity: 0; }
-            .hover-swap.swapped:hover .hover-on { opacity: 1; }
-            
-            .swapped 
-            {
-            
-            }
-            
-            .hover-swap.swapped .hover-off rect {
-            stroke: #70F;
-            }
-            
-            .hover-swap.swapped .hover-on rect {
-            stroke: #10b981;
-            }
-        </style>
-    </head>
+  <head>
+    <meta charset="utf-8" />
+
+    <style>
+    	/* # : %23 */
+    	hr {
+          border-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="0" x2="100%" y2="0" stroke="%23bbbbbb" stroke-width="3" stroke-dasharray="20 8"/></svg>') 1;
+        }
+        
+      .hover-swap * { pointer-events: none; }
+      
+        .hover-swap svg {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          transition: opacity 0.3s;
+        }
+        
+        .hover-swap {
+          position: relative;
+          padding: 1.5rem;
+          margin: 2rem 0;
+          background: white;
+          
+          animation-name: resetEle; 
+          animation-duration: 1s;
+          
+          scale: 100%;
+        }
+        
+        .hover-off { opacity: 1; }
+        .hover-on { opacity: 0; }
+
+        .hover-swap:hover { 
+          animation-name: bounceEle; 
+          animation-duration: 1s;
+          
+          scale: 105%;
+        }
+      
+        .hover-swap.swapped:hover .hover-off { opacity: 0; }
+        .hover-swap.swapped:hover .hover-on { opacity: 1; }
+      
+        .swapped 
+        {
+          
+          
+        }
+        .swapped:hover
+        {
+          animation-name: bounceEleSelected; 
+          animation-duration: 1s;
+          scale: 105%;
+        }
+      
+        .hover-swap.swapped .hover-off rect {
+          stroke: #5a5;
+        }
+
+        .hover-swap.swapped .hover-on rect {
+          stroke: #555;
+        }
+      
+      
+    </style>
+</head>
 
 <body>
-    <div style="display:flex; justify-content:center; gap: 1%;">
-      <b-item title="Item1" color-active="#bbb"> Cool item </b-item>
-      <b-item title="Item2" color-active="#bbb"> Cool item </b-item>
-      <b-item title="Item3" color-active="#bbb"> Cool item </b-item>
-      <b-item title="Item4" color-active="#bbb"> Cool item </b-item>
+  
+    <div style="display:flex; justify-content:center; gap: 1%;" id="item-container" >
+      <my-card class="bounce" title-name="Item1" color-active="#bbb"> Cool item </my-card >
+      <my-card title-name="Item2" color-active="#bbb"> Cool item </my-card >
+      <my-card title-name="Item3" color-active="#bbb"> Cool item </my-card >
+      <my-card title-name="Item4" color-active="#bbb"> Cool item </my-card >
     </div>
 <script>
-  customElements.define('b-item', class extends HTMLElement {
-    connectedCallback() {
-      this.innerHTML = `
+  function card_element(titleName, textContent="", color="#bbb") 
+  {
+    return `
       <div class="hover-swap">
         <svg class="hover-on">
           <rect 
@@ -68,7 +92,7 @@
             fill="none"
             stroke="#bbb"
             stroke-width="2"
-            stroke-dasharray="13 10"
+            stroke-dasharray="13 7"
           />
         </svg>
         <svg class="hover-off">
@@ -78,24 +102,122 @@
             height="calc(100% - 3px)"
             rx="8"
             fill="none"
-            stroke="${this.getAttribute('color-active')}"
+            stroke="${color}"
             stroke-width="2"
           />
         </svg>
-      <h2 style="color: #777;">${this.getAttribute('title')}</h2>
-      <p style="color: #555;">${this.textContent}</p>
-      <hr class="dashed"></hr>
-    </div>
-    `;
+        <h2 style="color: #777;">${titleName}</h2>
+        <p style="color: #555;">${textContent}</p>
+        <hr class="dashed"></hr>
+      </div>`;
+  }
+  
+  
+  let card = customElements.define('my-card', class extends HTMLElement {
+    connectedCallback() {
+      this.innerHTML = card_element("item1", "item1");
     }
   });
-</script>
-<script>
+  
+  
+  let container = document.getElementById('item-container');
+  
+  
+  
+  container.innerHTML += card_element("item5", "item5");
+  
+  
+  let list = [];
+  
+  
   document.addEventListener('click', e => {
     if (e.target.classList.contains('hover-swap')) {
       e.target.classList.toggle('swapped');
+      if ( e.target.classList.contains('swapped') )
+      {
+        woggle(e, true);
+      }
     }
   });
+  
+  document.addEventListener('mouseover', e => {
+    if (e.target.classList.contains('hover-swap')) {
+      toggleHigh(e, true);
+      
+    }
+  });
+
+  document.addEventListener('mouseout', e => {
+    if (e.target.classList.contains('hover-swap')) {
+      toggleHigh(e, false);
+      
+    }
+  });
+  
+  
+  async function woggle(e, high) {
+    if ( high ) 
+    {
+      await e.target.animate([
+        { transform: 'scale(1)', offset: 0 },
+        { transform: 'scale(1.2)', offset: 0.25 },
+        { transform: 'scale(0.9)', offset: 0.50 },
+        { transform: 'scale(1.1)', offset: 0.75 },
+        { transform: 'scale(1)', offset: 1 }
+      ], {
+        duration: 500,
+        easing: 'ease-in-out',
+        fill: 'forwards'
+      }).finished;
+    }
+  }
+  
+  async function shrink(e, small) {
+    if ( small ) 
+    {
+      await e.target.animate([
+        { transform: 'scale(1)', offset: 0 },
+        { transform: 'scale(0.5)', offset: 0.5 },
+        { transform: 'scale(0.5)', offset: 1 }
+      ], {
+        duration: 300,
+        easing: 'ease-in-out',
+        fill: 'forwards'
+      }).finished;
+    }
+  }
+  
+
+  async function toggleHigh(e, high) {
+    if ( high ) 
+    {
+      await e.target.animate([
+        { transform: 'translateY(0)', offset: 0 },
+        { transform: 'translateY(-10%)', offset: 0.5 },
+        { transform: 'translateY(-10%)', offset: 1 }
+      ], {
+        duration: 300,
+        easing: 'ease-in-out',
+        fill: 'forwards'
+      }).finished;
+    }
+    else
+    {
+      await e.target.animate([
+        { transform: 'translateY(-10%)', offset: 0.5 },
+        { transform: 'translateY(0%)', offset: 1 }
+      ], {
+        duration: 300,
+        easing: 'ease-in-out',
+        fill: 'forwards'
+      }).finished;
+    }
+  }
+  
+  
+  
 </script>
 </body>
+
+
 </html>
